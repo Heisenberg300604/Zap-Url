@@ -1,12 +1,9 @@
 // “create short link” API.
 
-import express from "express";
-const router = express.Router();
+import { Router } from "express";
+import { shortenUrl } from "../controller/url.controller.js";
+const router = Router();
 
-// POST /api/links/shorten
-// Real controller will validate, generate ID, put to DynamoDB
-router.post("/shorten", (req, res) => {
-  res.status(501).json({ message: "Not implemented: POST /api/links/shorten" });
-});
+router.post("/shorten", shortenUrl);
 
 export default router;
