@@ -2,8 +2,7 @@ import React, { useState } from "react";
 
 function App() {
   const [longUrl, setLongUrl] = useState("");
-  const [alias, setAlias] = useState("");
-  const [expiry, setExpiry] = useState("");
+  // const [expiry, setExpiry] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -19,9 +18,8 @@ function App() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          longUrl,
-          alias: alias || undefined,
-          expiry: expiry || undefined,
+          longURL : longUrl,
+          expiry: null,
         }),
       });
 
@@ -29,8 +27,9 @@ function App() {
 
       const data = await res.json();
       setShortUrl(data.shortUrl);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -59,20 +58,12 @@ function App() {
             className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:outline-none"
           />
 
-          <input
-            type="text"
-            placeholder="Custom alias (optional)"
-            value={alias}
-            onChange={(e) => setAlias(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:outline-none"
-          />
-
-          <input
+          {/* <input
             type="date"
             value={expiry}
             onChange={(e) => setExpiry(e.target.value)}
             className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:outline-none"
-          />
+          /> */}
 
           <button
             type="submit"
