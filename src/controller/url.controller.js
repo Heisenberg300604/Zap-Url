@@ -2,6 +2,10 @@
 import { createShortUrl } from "../service/url.service.js";
 export const shortenUrl = async (req, res, next) => {
   try {
+    console.log('Request body:', req.body);
+    if (!req.body) {
+      return res.status(400).json({ error: "Request body is missing" });
+    }
     const { longURL, expiry } = req.body;
 
     const record = await createShortUrl(longURL, expiry);

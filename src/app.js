@@ -11,7 +11,7 @@ const app = express();
 
 // Security & parsing
 app.use(helmet());
-app.use(express.json({ limit: "10kb" }));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
@@ -23,7 +23,7 @@ if (config.nodeEnv === "development") {
 app.get("/health", (req, res) => res.json({ ok: true, ts: Date.now() }));   
 
 app.use("/api/links", urlRoutes);
-app.use("/api", redirectRoutes);
+app.use("/", redirectRoutes);
 
 // 404 handler 
 app.use((req, res, next) => {
