@@ -7,6 +7,7 @@ import urlRoutes from "./routes/url.routes.js";
 import redirectRoutes from "./routes/redirect.routes.js";
 import config from "./config/index.js";
 import {connectRedis} from "./config/redisClient.js";
+import securityMiddleware from "./middleware/security.middleware.js";
 
 const app = express();
 
@@ -16,6 +17,7 @@ await connectRedis();
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(securityMiddleware);
 
 
 app.use(cors({
