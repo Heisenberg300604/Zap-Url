@@ -6,8 +6,11 @@ import logger from "./logger/index.js";
 import urlRoutes from "./routes/url.routes.js";
 import redirectRoutes from "./routes/redirect.routes.js";
 import config from "./config/index.js";
+import {connectRedis} from "./config/redisClient.js";
 
 const app = express();
+
+await connectRedis();
 
 // Security & parsing
 app.use(helmet());
