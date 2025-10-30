@@ -11,7 +11,7 @@ import securityMiddleware from "./middleware/security.middleware.js";
 
 const app = express();
 
-await connectRedis();
+  await connectRedis();
 
 // Security & parsing
 app.use(helmet());
@@ -41,11 +41,11 @@ app.use((req, res, next) => {
 });
 
 // centralized error handler
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  logger.error(`${err.status || 500} - ${err.message} - ${req.originalUrl}`);
-  const status = err.status || 500;
-  res.status(status).json({ error: err.message || "Internal Server Error" });
-});
+  // eslint-disable-next-line no-unused-vars
+  app.use((err, req, res, next) => {
+    logger.error(`${err.status || 500} - ${err.message} - ${req.originalUrl}`);
+    const status = err.status || 500;
+    res.status(status).json({ error: err.message || "Internal Server Error" });
+  });
 
 export default app;
