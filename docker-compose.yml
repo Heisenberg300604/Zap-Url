@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./zapurl-backend
+    container_name: zapurl-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./zapurl-backend/.env
+    volumes:
+      - ./zapurl-backend:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+    networks:
+      - zapurl-network
+
+  frontend:
+    build: ./zapurl
+    container_name: zapurl-frontend
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./zapurl/.env
+    volumes:
+      - ./zapurl:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - zapurl-network
+
+  redis:
+    image: redis:latest
+    container_name: zapurl-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - zapurl-network
+
+networks:
+  zapurl-network:
+    driver: bridge

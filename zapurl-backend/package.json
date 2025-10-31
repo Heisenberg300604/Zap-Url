@@ -5,11 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon --watch src --exec \"node src/server.js\"",
-    "lambda:offline": "serverless offline",
-    "lambda:deploy": "serverless deploy",
-    "lambda:deploy:prod": "serverless deploy --stage prod",
-    "lambda:logs": "serverless logs -f api -t"
+    "dev": "nodemon --watch src --exec \"node src/server.js\""
   },
   "keywords": [],
   "author": "",
@@ -31,8 +27,6 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10",
-    "serverless": "^4.22.0",
-    "serverless-offline": "^14.4.0"
+    "nodemon": "^3.1.10"
   }
 }

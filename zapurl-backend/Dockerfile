@@ -1,23 +1,18 @@
-# Dockerfile for zapurl-backend
-# Uses Node 20 (matching frontend recommendation) and installs dependencies
-FROM node:20.19-alpine
+# Use latest LTS Node.js version (v22)
+FROM node:22-alpine
 
+# Set working directory
 WORKDIR /app
 
-# copy package files first to leverage docker cache
-COPY package.json package-lock.json* ./
+# Copy package.json and install dependencies
+COPY package*.json ./
+RUN npm install
 
-# Install dependencies
-RUN npm ci --silent
-
-# Copy source
+# Copy the rest of the backend code
 COPY . .
 
-# Default environment
-ENV NODE_ENV=production
+# Expose backend port
+EXPOSE 5000
 
-EXPOSE 3000
-
-# Start the server
-CMD ["node", "src/server.js"]
-
+# Start backend server
+CMD ["npm", "run", "start"]
