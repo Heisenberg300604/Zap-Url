@@ -7,6 +7,9 @@ import ResultDisplay from "@/components/shortener/ResultDisplay";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
+// Get API base URL from environment variable or use relative path for development
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
 const Shorten = () => {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<{ shortUrl: string; originalUrl: string } | null>(null);
@@ -16,7 +19,7 @@ const Shorten = () => {
         setResult(null);
 
         try {
-            const res = await fetch("/api/links/shorten", {
+            const res = await fetch(`${API_BASE_URL}/api/links/shorten`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

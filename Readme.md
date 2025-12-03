@@ -1,468 +1,313 @@
-# ⚡ ZapURL - High-Performance URL Shortener
+## Zap URL – Full-Stack URL Shortener
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-19+-blue.svg)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
-[![AWS](https://img.shields.io/badge/AWS-DynamoDB%20%7C%20Lambda-orange.svg)](https://aws.amazon.com/)
+Zap URL is a **full-stack URL shortener** application that demonstrates end-to-end product development: from REST API design and database integration to a responsive React frontend and production deployment on AWS and Vercel.
 
-> 🚀 **Enterprise-grade URL shortener built with modern technologies, designed for scale and performance**
-
-ZapURL is a full-stack, production-ready URL shortening service featuring lightning-fast redirects, enterprise security, advanced analytics, and comprehensive DevOps infrastructure. Built with cutting-edge technologies and designed to handle millions of requests with sub-100ms response times.
+It showcases **modern web development practices**, including SPA architecture, API integration, caching, logging, and cloud deployment.
 
 ---
 
-## 📋 Table of Contents
+## Project Overview
 
-- [✨ Features](#-features)
-- [🏗️ Architecture](#️-architecture)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [⚙️ Installation & Setup](#️-installation--setup)
-- [🚀 Usage](#-usage)
-- [📊 Scalability & Performance](#-scalability--performance)
-- [🔒 Security](#-security)
-- [🐳 DevOps & Deployment](#-devops--deployment)
-- [📖 API Documentation](#-api-documentation)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
+Zap URL allows users to **convert long URLs into short, shareable links** and then **redirects** those short links to their original destinations.
 
----
+The stack is split into:
 
-## ✨ Features
+- **Frontend**: React + Vite + TypeScript + TailwindCSS (SPA with client-side routing and responsive UI)
+- **Backend**: Node.js + Express running on AWS EC2
+- **Data & Infra**:
+  - **DynamoDB** for persistent storage of URLs and metadata
+  - **Redis** for caching and performance
+  - **ArcJet** for security controls (e.g. bot protection, abuse prevention)
+  - **PM2** and optionally **NGINX** for robust backend process and HTTP management
 
-### 🎯 Core Features
-- **⚡ Lightning Fast**: Sub-100ms response times with Redis caching
-- **🔗 Custom Short Codes**: Branded, memorable links with 8-character nanoid generation
-- **📊 Advanced Analytics**: Real-time click tracking and geographic insights
-- **⏰ Link Expiration**: Automatic expiration for time-sensitive campaigns
-- **🛡️ Enterprise Security**: Rate limiting, bot protection, and input validation
-- **📱 Responsive Design**: Modern UI with Tailwind CSS and dark theme support
-
-### 🏢 Enterprise Features
-- **🚀 Horizontal Scaling**: Containerized microservices architecture
-- **💾 Multi-layer Caching**: Redis for hot data, DynamoDB for persistence
-- **🔐 Security Middleware**: Arcjet integration for DDoS protection and rate limiting
-- **📈 Monitoring & Logging**: Comprehensive logging with Winston
-- **☁️ Cloud-Ready**: AWS Lambda support with serverless deployment
-- **🐳 Containerization**: Docker & Docker Compose ready (in development)
+This project emphasizes **full-stack integration**, **production-oriented deployment**, and **real-world patterns** such as caching, logging, and error handling.
 
 ---
 
-## 🏗️ Architecture
+## Features
 
-ZapURL follows a modern microservices architecture with clear separation of concerns:
+- **URL Shortening**
+  - **`POST /api/shorten`** API to create short URLs for any valid long URL
+  - Stores original URL and associated metadata in DynamoDB
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │    Backend      │    │    Database     │
-│  (React/TS)     │◄──►│   (Node.js)     │◄──►│   (DynamoDB)    │
-│                 │    │                 │    │                 │
-│ • Vite         │    │ • Express.js    │    │ • AWS DynamoDB  │
-│ • TailwindCSS  │    │ • Redis Cache   │    │ • Redis Cache   │
-│ • React Query  │    │ • Arcjet        │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
+- **Redirection**
+  - **`GET /api/:shortId`** API to resolve a short ID and redirect to the original URL
+  - Uses Redis to quickly look up frequently accessed short URLs
 
-### 🔄 Request Flow
-1. **URL Submission** → Frontend validates and submits to API
-2. **Security Layer** → Arcjet middleware for rate limiting & bot protection
-3. **Code Generation** → 8-character nanoid with collision detection
-4. **Persistence** → DynamoDB storage with TTL support
-5. **Caching** → Redis caching for frequently accessed URLs
-6. **Redirect** → Sub-100ms redirect with cache-first lookup
+- **Scalable Backend Architecture**
+  - Express-based API with a clear controller–service–repository structure
+  - Redis caching layer in front of DynamoDB for performance and reduced read load
+  - ArcJet integration for enhanced security and request protection
 
----
+- **Modern React Frontend**
+  - Single Page Application built with React, Vite, and TypeScript
+  - Responsive TailwindCSS-based UI
+  - SPA routing for landing page, shortening form, and results
 
-## 🛠️ Tech Stack
+- **Full Integration**
+  - Frontend communicates with the deployed backend over HTTP
+  - Vite proxy and environment configuration wired to the EC2 backend
 
-### 🎨 Frontend
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React** | 19.1+ | Modern UI library with hooks |
-| **TypeScript** | 5.8+ | Type-safe development |
-| **Vite** | 7.1+ | Lightning-fast build tool |
-| **TailwindCSS** | 4.1+ | Utility-first CSS framework |
-| **React Query** | 5.90+ | Server state management |
-| **React Router** | 7.9+ | Client-side routing |
-| **Lucide React** | Latest | Beautiful icon library |
-| **Radix UI** | Latest | Headless UI components |
-
-### ⚙️ Backend
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Node.js** | 18+ | JavaScript runtime |
-| **Express.js** | 5.1+ | Web application framework |
-| **AWS SDK** | 3.888+ | DynamoDB integration |
-| **Redis** | 5.9+ | In-memory caching |
-| **Arcjet** | 1.0-beta | Security & rate limiting |
-| **Winston** | 3.17+ | Logging framework |
-| **Helmet** | 8.1+ | Security headers |
-| **Nanoid** | 5.1+ | URL-safe unique ID generator |
-
-### ☁️ Infrastructure & DevOps
-| Technology | Purpose |
-|------------|---------|
-| **AWS DynamoDB** | NoSQL database for URL storage |
-| **AWS Lambda** | Serverless compute (ready) |
-| **Redis** | High-performance caching layer |
-| **Docker** | Containerization (in development) |
-| **Docker Compose** | Multi-container orchestration |
-| **AWS EC2** | Planned deployment target |
+- **Logging & Error Handling**
+  - Centralized logging in the backend for observability
+  - Structured error responses and middleware-based error handling
 
 ---
 
-## ⚙️ Installation & Setup
+## Tech Stack
 
-### 📋 Prerequisites
-- **Node.js** 18+ ([Download](https://nodejs.org/))
-- **Redis** ([Installation Guide](https://redis.io/download))
-- **AWS Account** with DynamoDB access
-- **Git** for version control
+- **Frontend**
+  - React
+  - Vite
+  - TypeScript
+  - TailwindCSS
+  - React Router (SPA routing)
 
-### 🚀 Quick Start
+- **Backend**
+  - Node.js
+  - Express
+  - PM2 (process manager)
+  - NGINX (optional reverse proxy)
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Heisenberg300604/Zap-Url.git
-   cd zapurl
-   ```
+- **Data & Infrastructure**
+  - Redis (caching layer)
+  - AWS DynamoDB (persistent data store)
+  - AWS EC2 (Ubuntu instance for backend)
+  - ArcJet (security / protection)
 
-2. **Backend Setup**
-   ```bash
-   cd zapurl-backend
-   npm install
-   
-   # Create environment file
-   cp .env.example .env
-   # Configure your AWS credentials and Redis URL in .env
-   ```
-
-3. **Frontend Setup**
-   ```bash
-   cd ../zapurl
-   npm install
-   ```
-
-4. **Environment Configuration**
-   
-   **Backend (.env)**:
-   ```env
-   PORT=3000
-   NODE_ENV=development
-   BASE_URL=http://localhost:3000
-   
-   # AWS Configuration
-   AWS_REGION=us-east-1
-   AWS_ACCESS_KEY_ID=your_access_key
-   AWS_SECRET_ACCESS_KEY=your_secret_key
-   DYNAMODB_TABLE=UrlTable
-   
-   # Redis Configuration
-   REDIS_URL=redis://localhost:6379
-   
-   # Security (optional for development)
-   ARCJET_KEY=your_arcjet_key
-   ```
-
-5. **Database Setup**
-   
-   Create DynamoDB table:
-   ```bash
-   aws dynamodb create-table \
-     --table-name UrlTable \
-     --attribute-definitions AttributeName=shortCode,AttributeType=S \
-     --key-schema AttributeName=shortCode,KeyType=HASH \
-     --billing-mode PAY_PER_REQUEST \
-     --region us-east-1
-   ```
-
-6. **Start the services**
-   ```bash
-   # Start Redis
-   redis-server
-   
-   # Start Backend (in zapurl-backend directory)
-   npm run dev
-   
-   # Start Frontend (in zapurl directory)
-   npm run dev
-   ```
-
-7. **Access the application**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:3000
-   - Health Check: http://localhost:3000/health
+- **Tooling**
+  - npm (package management)
+  - ESLint / TypeScript configuration
+  - Vite build pipeline
 
 ---
 
-## 🚀 Usage
+## Folder Structure
 
-### 🌐 Web Interface
-1. Open http://localhost:5173
-2. Enter your long URL in the input field
-3. Click "Shorten URL" to generate a short link
-4. Copy and share your new short URL
+At the root of the repository:
 
-### 🔗 API Integration
-```javascript
-// Shorten a URL
-const response = await fetch('http://localhost:3000/api/links/shorten', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ 
-    longURL: 'https://example.com/very-long-url',
-    expiry: '2024-12-31T23:59:59.000Z' // Optional
-  })
-});
+- **`zapurl`** – React + Vite frontend  
+  - `src/` – React components, pages, and app entry
+    - `components/` – UI and layout components (landing, shortener form, etc.)
+    - `pages/` – Page-level views and routing
+    - `lib/` – Utilities and helpers
+  - `public/` – Static assets
+  - `dist/` – **Production build output** for the frontend
+  - `vite.config.ts` – Vite configuration (including base and proxy setup)
+  - `tsconfig*.json` – TypeScript configurations
+  - `package.json` – Frontend scripts and dependencies
 
-const { shortCode, shortURL } = await response.json();
+- **`zapurl-backend`** – Node.js + Express backend  
+  - `src/`
+    - `server.js` – Backend entry point (launched with PM2)
+    - `app.js` – Express app configuration and middleware wiring
+    - `routes/` – Route definitions, including:
+      - `url.routes.js` – Routes like `POST /api/shorten`
+      - `redirect.routes.js` – Routes like `GET /api/:shortId`
+    - `controller/` – Controllers for redirect and URL operations
+    - `service/` – Business logic for URL creation, retrieval, and validation
+    - `repositories/` – DynamoDB/Redis data access layer
+    - `config/` – Configuration for Redis, DynamoDB, ArcJet, etc.
+    - `middleware/` – Security and other middlewares
+    - `logger/` – Logging utilities
+    - `utils/` – Helpers (ID generation, validation, etc.)
+  - `package.json` – Backend scripts and dependencies
+
+- **Environment & Config**
+  - `.env` files (not committed) – Backend and frontend configuration:
+    - Redis connection
+    - DynamoDB credentials/region
+    - Backend base URL / API URL
+    - ArcJet keys and security config
+
+---
+
+## API Endpoints
+
+- **Shorten URL**
+  - **Method**: `POST`
+  - **Path**: `/api/shorten`
+  - **Description**: Accepts a long URL (and optional metadata) and returns a shortened URL + ID.
+  - **Sample Request Body** (example):
+
+    ```json
+    {
+      "url": "https://example.com/very/long/url",
+      "expiresIn": 86400
+    }
+    ```
+
+- **Redirect to Original URL**
+  - **Method**: `GET`
+  - **Path**: `/api/:shortId`
+  - **Description**: Looks up the original URL by `shortId`, leverages Redis cache, and redirects the client.
+
+---
+
+## Deployment
+
+- **Frontend**
+  - Deployed on **Vercel** at:  
+    [`https://zap-url-five.vercel.app/`](https://zap-url-five.vercel.app/)
+  - Built using `npm run build` (Vite).
+  - Vite configured with:
+    - `base: '/'`
+    - Development proxy targeting the backend on AWS EC2
+    - Production environment variable (`VITE_API_BASE_URL`) for direct backend communication
+  - Environment Configuration:
+    - **Development**: Uses Vite proxy (leave `VITE_API_BASE_URL` empty)
+    - **Production**: Set `VITE_API_BASE_URL=http://3.108.254.115:3000` in Vercel
+
+- **Backend**
+  - Deployed on an **AWS EC2 (Ubuntu)** instance at: `http://3.108.254.115:3000`
+  - Runs as a Node.js process managed by **PM2**:
+    - Example: `pm2 start src/server.js --name zapurl-backend`
+  - **Redis** installed and running locally on the EC2 instance.
+  - **DynamoDB** used as the main database (using AWS SDK from the backend).
+  - **CORS** configured to accept requests from:
+    - `http://localhost:5173` (local development)
+    - `https://zap-url-five.vercel.app` (production)
+  - **NGINX** optionally used as a reverse proxy in front of the Node server for:
+    - SSL termination
+    - Routing from port 80/443 to the Node app
+
+- **Networking**
+  - Frontend makes API calls directly to the backend using the EC2 public IP
+  - Environment variables configure the API base URL on the frontend:
+    - `VITE_API_BASE_URL` for production (set in Vercel)
+    - Empty/omitted for development (uses Vite proxy)
+
+---
+
+## Setup Instructions (Local Development)
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>.git
+cd zapurl
 ```
 
-### 🔄 Redirect Usage
-Simply visit: `http://localhost:3000/{shortCode}`
+### 2. Frontend Setup (`zapurl`)
+
+```bash
+cd zapurl
+npm install
+```
+
+Create a `.env` file for local development (uses Vite proxy):
+
+```bash
+# Leave empty for development
+VITE_API_BASE_URL=
+```
+
+For production deployment on Vercel, set environment variable:
+
+```bash
+VITE_API_BASE_URL=http://3.108.254.115:3000
+```
+
+To run in development:
+
+```bash
+npm run dev
+```
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+**Note**: The `.env.production` file is already configured with the production backend URL.
+
+### 3. Backend Setup (`zapurl-backend`)
+
+In a separate terminal:
+
+```bash
+cd /Users/nibedanpati/Desktop/Projects/Full\ Stack/zapurl/zapurl-backend
+npm install
+```
+
+Configure backend environment variables in a `.env` file, for example:
+
+```bash
+PORT=3000
+REDIS_HOST=localhost
+REDIS_PORT=6379
+DYNAMODB_REGION=<your-region>
+DYNAMODB_TABLE=<your-table-name>
+ARCJET_API_KEY=<your-arcjet-key>
+```
+
+You’ll also need a running **Redis** instance and access to **DynamoDB** (either AWS or local DynamoDB).
+
+### 4. Run Backend with PM2
+
+From the `zapurl-backend` directory:
+
+```bash
+pm2 start src/server.js --name zapurl-backend
+```
+
+Or (if `server.js` is at root of `src` or compiled location as configured):
+
+```bash
+pm2 start server.js --name zapurl-backend
+```
+
+PM2 will keep the process alive and restart it if it crashes.
+
+### 5. Access the App
+
+- Frontend (local dev): typically `http://localhost:5173` (or the port Vite prints).
+- Backend (local): `http://localhost:3000` or whatever `PORT` you configured.
 
 ---
 
-## 📊 Scalability & Performance
+## Screenshots (Optional)
 
-### 🚀 Performance Optimizations
-- **Redis Caching**: 24-hour TTL for frequently accessed URLs
-- **DynamoDB**: Single-table design with optimized queries
-- **Nanoid Generation**: Collision-resistant 8-character codes (64^8 combinations)
-- **Connection Pooling**: Persistent database connections
-- **Compression**: Gzip middleware for API responses
+You can add screenshots or GIFs here to visually demonstrate:
 
-### 📈 Scalability Features
-- **Horizontal Scaling**: Stateless application design
-- **Caching Strategy**: Multi-layer caching (Redis + CDN ready)
-- **Database Sharding**: DynamoDB auto-scaling capabilities
-- **Load Balancing**: Ready for ALB/NLB integration
-- **Microservices**: Separated frontend/backend for independent scaling
+- **Landing page** showing the URL input form.
+- **Shortened URL result view**.
+- **Mobile view** to highlight the responsive TailwindCSS layout.
 
-### 📊 Performance Metrics
-- **Response Time**: Sub-100ms for cached URLs
-- **Throughput**: 10,000+ requests/minute per instance
-- **Cache Hit Rate**: >90% for popular URLs
-- **Database**: Consistent single-digit millisecond latency
+Example placeholders:
+
+- `![Zap URL – Landing Page](./screenshots/landing.png)`
+- `![Zap URL – Shortened URL Result](./screenshots/result.png)`
 
 ---
 
-## 🔒 Security
+## Future Enhancements
 
-### 🛡️ Security Layers
-- **Rate Limiting**: 10 requests/minute per IP (configurable)
-- **Bot Protection**: Arcjet-powered bot detection
-- **Input Validation**: Comprehensive URL validation
-- **HTTPS Ready**: SSL/TLS encryption support
-- **Security Headers**: Helmet.js security headers
-- **CORS Configuration**: Controlled cross-origin requests
+- **User Accounts & Analytics**
+  - Add authentication and user profiles.
+  - Track click analytics (per link, per user, geolocation, referrer, etc.).
 
-### 🔐 Security Middleware
-```javascript
-// Arcjet Security Configuration
-- DDoS Protection: Advanced traffic analysis
-- Rate Limiting: Sliding window algorithm
-- Bot Detection: ML-powered bot identification
-- Shield Protection: Custom security rules
-```
+- **Custom Aliases & Domains**
+  - Allow custom short IDs and custom domains for branded links.
 
----
+- **Rate Limiting & Advanced Security**
+  - Expand ArcJet rules and add application-level rate limiting per IP or per user.
 
-## 🐳 DevOps & Deployment
+- **Admin Dashboard**
+  - Web dashboard to manage links, monitor traffic, and view error logs.
 
-### 🚧 Current Status: Development Phase
-> **Note**: Docker integration is currently in development. Full containerization and cloud deployment coming soon!
-
-### 🎯 Planned DevOps Pipeline
-
-#### 🐳 Containerization (In Progress)
-```yaml
-# Docker Compose Architecture
-services:
-  frontend:    # React/Vite application
-  backend:     # Node.js/Express API
-  redis:       # Caching layer
-  # Future: nginx, monitoring
-```
-
-#### ☁️ AWS Deployment Strategy
-```
-Production Architecture (Planned):
-├── 🌐 CloudFront CDN
-├── 🔧 Application Load Balancer
-├── 🖥️  EC2 Auto Scaling Groups
-├── 📊 DynamoDB (Production)
-├── ⚡ ElastiCache (Redis)
-├── 📈 CloudWatch Monitoring
-└── 🔒 AWS WAF Security
-```
-
-### 🚀 Deployment Roadmap
-
-#### Phase 1: Containerization ✅ (In Progress)
-- [x] Docker configuration files
-- [x] Docker Compose setup
-- [ ] Multi-stage builds optimization
-- [ ] Production Docker images
-
-#### Phase 2: AWS Infrastructure 🎯 (Next)
-- [ ] EC2 deployment with Auto Scaling
-- [ ] RDS/DynamoDB production setup
-- [ ] ElastiCache Redis cluster
-- [ ] Application Load Balancer
-
-#### Phase 3: CI/CD Pipeline 🚀 (Future)
-- [ ] GitHub Actions workflows
-- [ ] Automated testing pipeline
-- [ ] Infrastructure as Code (Terraform)
-- [ ] Blue-green deployments
-
-#### Phase 4: Monitoring & Observability 📊 (Future)
-- [ ] CloudWatch dashboards
-- [ ] Application performance monitoring
-- [ ] Log aggregation and analysis
-- [ ] Alert management
-
-### 🛠️ DevOps Technologies (Planned)
-| Technology | Purpose | Status |
-|------------|---------|---------|
-| **Docker** | Containerization | 🚧 In Progress |
-| **AWS EC2** | Compute hosting | 📋 Planned |
-| **AWS ALB** | Load balancing | 📋 Planned |
-| **Terraform** | Infrastructure as Code | 📋 Planned |
-| **GitHub Actions** | CI/CD pipeline | 📋 Planned |
-| **CloudWatch** | Monitoring | 📋 Planned |
+- **Improved Monitoring & Observability**
+  - Integrate with services like CloudWatch, Datadog, or Grafana for metrics and alerting.
 
 ---
 
-## 📖 API Documentation
+## Why This Project Matters
 
-### 🔗 Endpoints
+Zap URL demonstrates:
 
-#### Shorten URL
-```http
-POST /api/links/shorten
-Content-Type: application/json
+- **Full-stack skills**: React + Vite + TypeScript on the frontend, Node.js + Express on the backend.
+- **Real-world deployment experience**: Vercel for frontend, AWS EC2 (with PM2, Redis, DynamoDB, and optional NGINX) for the backend.
+- **Production-minded design**: Caching, logging, error handling, configuration via environment variables, and clear project structure.
 
-{
-  "longURL": "https://example.com/very-long-url",
-  "expiry": "2024-12-31T23:59:59.000Z" // Optional
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "shortCode": "aB3dEf9h",
-  "shortURL": "http://localhost:3000/aB3dEf9h",
-  "longURL": "https://example.com/very-long-url",
-  "createdAt": "2024-11-01T10:30:00.000Z",
-  "expiry": null
-}
-```
-
-#### Redirect to Original URL
-```http
-GET /{shortCode}
-```
-
-**Responses:**
-- `302` - Successful redirect
-- `404` - Short URL not found
-- `410` - Short URL expired
-
-#### Health Check
-```http
-GET /health
-```
-
-**Response:**
-```json
-{
-  "ok": true,
-  "ts": 1698845400000
-}
-```
-
-### 📝 Response Codes
-| Code | Meaning |
-|------|---------|
-| `200` | Success |
-| `302` | Redirect |
-| `400` | Bad Request |
-| `404` | Not Found |
-| `410` | Gone (Expired) |
-| `429` | Too Many Requests |
-| `500` | Internal Server Error |
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Commit changes**: `git commit -m 'Add amazing feature'`
-4. **Push to branch**: `git push origin feature/amazing-feature`
-5. **Open a Pull Request**
-
-### 📋 Development Guidelines
-- Follow TypeScript best practices
-- Write comprehensive tests
-- Update documentation
-- Ensure security compliance
-- Test Docker compatibility
-
----
-
-## 🗺️ Project Roadmap
-
-### 🎯 Short Term (Q1 2024)
-- [ ] Complete Docker integration
-- [ ] AWS EC2 deployment
-- [ ] Custom domain support
-- [ ] Analytics dashboard
-
-
-
-## 📊 Project Stats
-
-```
-📁 Project Size:     ~2.5MB
-📄 Files:           45+ source files  
-🧪 Test Coverage:   Coming soon
-🏗️  Architecture:    Microservices
-📈 Performance:     Sub-100ms response
-🔒 Security Score:  A+ (planned)
-```
----
-
-## 👨‍💻 Author
-
-**Heisenberg300604**
-- GitHub: [@Heisenberg300604](https://github.com/Heisenberg300604)
-- Project: [ZapURL](https://github.com/Heisenberg300604/Zap-Url)
-
----
-
-## 🙏 Acknowledgments
-
-- **Arcjet** for security middleware
-- **AWS** for cloud infrastructure
-- **Redis** for high-performance caching
-- **Vercel** for deployment platform inspiration
-- **Open Source Community** for amazing libraries
-
----
-
-<div align="center">
-
-### ⚡ Built with performance, security, and scale in mind
-
-**[🔗 Live Demo](https://zapurl.example.com)** | **[📖 Documentation](https://docs.zapurl.example.com)** | **[🐛 Report Bug](https://github.com/Heisenberg300604/Zap-Url/issues)**
-
-Made with ❤️ and ⚡ by [Heisenberg300604](https://github.com/Heisenberg300604)
-
-</div>
+It is designed to be **recruiter-friendly** and to showcase the ability to build, integrate, and deploy a complete modern web application.

@@ -21,7 +21,10 @@ app.use(securityMiddleware);
 
 
 app.use(cors({
-  origin: "http://localhost:5173", // frontend URL
+  origin: [
+    "http://localhost:5173", // local development
+    "https://zap-url-five.vercel.app" // production frontend
+  ],
   credentials: true
 }));
 
